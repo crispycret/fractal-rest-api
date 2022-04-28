@@ -24,7 +24,9 @@ pip install -r requirements.txt
 ```
 
 ### Credentials
-If you would like to use this program you need to create the following file at the following path: `fractal-rest-api/components/db/settings.json`
+If you would like to use this program you need to create the following file at the following path: 
+
+`fractal-rest-api/components/db/settings.json`
 
 Inside the `settings.json` file you need to put your credentials for your mysql server.
 
