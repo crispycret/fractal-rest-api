@@ -28,7 +28,10 @@ CORS(app)
 
 
 def Error(msg=None):
-  return {"status": "failed", "msg":msg}
+  return {"success": "false", "status": "error", "msg":msg}
+
+def Success(msg=None):
+  return {"success": "true", "status": "success", "msg":msg}
 
 
 
@@ -37,14 +40,25 @@ def Error(msg=None):
 def test():
   return "Hello, World!"
 
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+  data = {
+    "username": request.args.get('username', default=30, type=str),
+    "secret": request.args.get('password', default=64, type=str)
+  }
 
-#@app.route("/user/<username>", methods=['GET', 'POST'])
+  results = AWS_RDS.verify_user_password(data)
+  if not results: return Error(f"No account with username {data['username']} exists.") 
+  return Success(results)
+
+
+
 
 @app.route("/user/<username>")
 def user_profile(username):
   # handle cookies to tell if the user is logged in.
   # If the user is logged in, show private projects as well.
-  return username
+  return Success(username)
 
 
 @app.route("/user/<username>/")
@@ -71,8 +85,9 @@ def user_projects(username):
     del data['public']
 
   results = AWS_RDS.load_fractal_project(data)
-  return jsonify(results)
+  if not results: return Error(f"The account {username} has no public projects.") 
 
+  return Success(results)
 
 
 
@@ -90,7 +105,10 @@ def user_project(username, project_id):
   data['public']=True
   data['user_id'] = results['id']
 
-  return jsonify(AWS_RDS.load_fractal_project(data))
+  results = AWS_RDS.load_fractal_project(data)
+  if not results: return Error(f"The account {username} has no public projects.") 
+
+  return Success(results)
 
 
 @app.route('/engine/mandelbrot')
