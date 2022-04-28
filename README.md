@@ -1,4 +1,4 @@
-# fractal-rest-api
+# Fractal Rest API
 
 
 This API was built for the [`Fractal Engine`](https://github.com/crispycret/fractal-webapp) to handle the generation of fractals and to act as an interface with the database.
