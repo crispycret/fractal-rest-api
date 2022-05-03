@@ -1,4 +1,5 @@
 import os, sys, json
+import hashlib
 import pymysql
 
 from . import queries
@@ -99,7 +100,7 @@ class AWS_RDS (object):
         if not AWS_RDS.IsConnected(): return
         columns, values = AWS_RDS.generate_columns_values(data)
         query = queries.insert_user(columns, values)
-
+        
         return AWS_RDS.status_report(query)[0]
 
     

@@ -1,8 +1,9 @@
+import hashlib
 import json, base64
 from unittest import result
 
 from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
+from flask_cors import CORS, cross_orgin
 
 
 from components.db.db import AWS_RDS
@@ -40,17 +41,46 @@ def Success(msg=None):
 def test():
   return "Hello, World!"
 
-@app.route("/login", methods=['GET', 'POST'])
+
+
+
+@app.route("/login", methods=['POST'])
+@cross_orgin()
 def login():
   data = {
     "username": request.args.get('username', default=30, type=str),
     "secret": request.args.get('password', default=64, type=str)
   }
 
+  # Encrypt password
+  data['secret'] = hashlib.md5(data['secret'])
+
   results = AWS_RDS.verify_user_password(data)
   if not results: return Error(f"No account with username {data['username']} exists.") 
   return Success(results)
 
+
+
+
+
+
+
+@app.route('/signup', methods=['POST'])
+@cross_orgin()
+def signup():
+  data = {
+    "username": request.args.get('username', default=30, type=str),
+    "secret": request.args.get('password', default=64, type=str)
+  }
+
+  # Encrypt password
+  data['secret'] = hashlib.md5(data['secret'])
+
+  results = AWS_RDS.verify_user_password(data)
+  if (results): Error(f"Account already exits with the username {data['username']}.") 
+  return Success(results)
+
+  
 
 
 
